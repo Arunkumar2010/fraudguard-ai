@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudGuard AI | Login</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: #05030F;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .bg-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Animated wave ribbons */
+        .ribbon {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            top: 0;
+            left: -50%;
+            animation: flowRibbon 8s ease-in-out infinite;
+            transform-origin: center center;
+        }
+
+        .ribbon:nth-child(1) {
+            animation-duration: 9s;
+            animation-delay: 0s;
+        }
+        .ribbon:nth-child(2) {
+            animation-duration: 11s;
+            animation-delay: -3s;
+        }
+        .ribbon:nth-child(3) {
+            animation-duration: 7s;
+            animation-delay: -5s;
+        }
+
+        @keyframes flowRibbon {
+            0%, 100% { transform: translateX(0) skewX(-5deg) scaleY(1); }
+            33% { transform: translateX(3%) skewX(3deg) scaleY(1.05); }
+            66% { transform: translateX(-3%) skewX(-3deg) scaleY(0.95); }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(10, 5, 30, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(150, 100, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px 36px;
+            width: 380px;
+            box-shadow: 0 0 40px rgba(123, 47, 190, 0.3),
+                        0 8px 32px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .logo-circle {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        .title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(150, 100, 255, 0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #A855F7;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            text-decoration: none;
+            margin-top: 4px;
+        }
+
+        .sign-in-btn {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 24px;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .sign-in-btn:hover {
+            opacity: 0.9;
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        .register-link {
+            color: #A855F7;
+            font-weight: 600;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-container">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice"
+         xmlns="http://www.w3.org/2000/svg"
+         style="width:100%;height:100%;position:absolute">
+
+      <!-- Dark base -->
+      <rect width="1200" height="800" fill="#05030F"/>
+      
+      <!-- Deep dark left area -->
+      <ellipse cx="150" cy="300" rx="300" ry="400" 
+               fill="#0A0518" opacity="0.9"/>
+
+      <!-- Purple/indigo ribbon 1 -->
+      <path class="ribbon" d="M-100,500 C200,350 400,200 600,280 
+               C800,360 950,180 1300,250"
+            fill="none" stroke="url(#grad1)" 
+            stroke-width="60" opacity="0.5" stroke-linecap="round"/>
+      
+      <!-- Purple ribbon 2 (thinner, brighter) -->
+      <path class="ribbon" d="M-100,520 C200,370 400,220 600,300 
+               C800,380 950,200 1300,270"
+            fill="none" stroke="url(#grad2)" 
+            stroke-width="25" opacity="0.8" stroke-linecap="round"/>
+
+      <!-- Cyan/teal ribbon -->
+      <path class="ribbon" d="M-100,540 C250,400 450,260 620,320 
+               C800,390 970,220 1300,290"
+            fill="none" stroke="url(#grad3)" 
+            stroke-width="8" opacity="0.9" stroke-linecap="round"/>
+
+      <!-- Gold/orange ribbon right side -->
+      <path d="M700,0 C800,100 900,300 1000,400 
+               C1100,500 1200,600 1300,700"
+            fill="none" stroke="url(#grad4)" 
+            stroke-width="50" opacity="0.6" stroke-linecap="round"/>
+
+      <!-- Bright gold thin line -->
+      <path d="M750,0 C840,120 930,320 1020,420 
+               C1110,520 1200,620 1300,720"
+            fill="none" stroke="#FFD700" 
+            stroke-width="3" opacity="0.8" stroke-linecap="round"/>
+
+      <!-- Teal right glow -->
+      <path d="M900,200 C1000,350 1050,500 1100,700"
+            fill="none" stroke="url(#grad5)" 
+            stroke-width="80" opacity="0.4" stroke-linecap="round"/>
+
+      <!-- Red/orange bottom left glow -->
+      <ellipse cx="100" cy="750" rx="200" ry="120" 
+               fill="#FF2D00" opacity="0.25"/>
+
+      <!-- Thin bright highlight lines -->
+      <path d="M-100,515 C200,365 400,215 600,295 
+               C800,375 950,195 1300,265"
+            fill="none" stroke="#FFFFFF" 
+            stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
+      
+      <path d="M-100,535 C250,395 450,255 620,315 
+               C800,385 970,215 1300,285"
+            fill="none" stroke="#00FFFF" 
+            stroke-width="1" opacity="0.7" stroke-linecap="round"/>
+
+      <path d="M760,10 C845,130 935,330 1025,430"
+            fill="none" stroke="#FFFFFF" 
+            stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+
+      <!-- SVG Gradient Definitions -->
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4B0082"/>
+          <stop offset="40%" stop-color="#7B2FBE"/>
+          <stop offset="70%" stop-color="#9B59B6"/>
+          <stop offset="100%" stop-color="#E056FD"/>
+        </linearGradient>
+        
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2E0854"/>
+          <stop offset="50%" stop-color="#8E44AD"/>
+          <stop offset="100%" stop-color="#BB8FCE"/>
+        </linearGradient>
+
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00CED1"/>
+          <stop offset="50%" stop-color="#48D1CC"/>
+          <stop offset="100%" stop-color="#7FFFD4"/>
+        </linearGradient>
+
+        <linearGradient id="grad4" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFA500"/>
+          <stop offset="40%" stop-color="#FFD700"/>
+          <stop offset="70%" stop-color="#20B2AA"/>
+          <stop offset="100%" stop-color="#008B8B"/>
+        </linearGradient>
+
+        <linearGradient id="grad5" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#00CED1"/>
+          <stop offset="100%" stop-color="#006400"/>
+        </linearGradient>
+
+        <!-- Glow filter -->
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+    </svg>
+
+    <!-- CSS animation overlay -->
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;
+      background: radial-gradient(ellipse at 15% 50%, 
+        rgba(80,0,120,0.3) 0%, transparent 60%);
+      animation: glowPulse 4s ease-in-out infinite;"></div>
+
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;
+      background: radial-gradient(ellipse at 90% 60%, 
+        rgba(0,180,180,0.2) 0%, transparent 50%);
+      animation: glowPulse 6s ease-in-out infinite reverse;"></div>
+
+    </div>
+
+    <div class="login-wrapper">
+
+    <div class="login-card">
+        <div style="margin-bottom: 20px;">
+            <a href="/home" style="color: rgba(255,255,255,0.6); text-decoration: none; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <i data-lucide="arrow-left" size="14"></i> Back to Home
+            </a>
+        </div>
+        <div class="logo-circle">
+            <i data-lucide="shield-check"></i>
+        </div>
+        <div class="title">FraudGuard AI</div>
+        
+        <form action="/login" method="POST">
+            <div class="subtitle">Login</div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="username@gmail.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Password••••••••" required>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="sign-in-btn">Sign in</button>
+        </form>
+
+        <div style="text-align:center; margin: 20px 0 10px;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+            <div style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></div>
+            <span style="color:rgba(255,255,255,0.6); font-size:12px;">or continue with</span>
+            <div style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:12px;">
+            
+            <a href="#" onclick="socialLogin('Google')" style="
+              display:flex; align-items:center; justify-content:center; gap:6px;
+              background:white; color:#374151; border:none;
+              padding:9px 16px; border-radius:8px;
+              font-size:13px; font-weight:500; cursor:pointer;
+              text-decoration:none; min-width:80px;">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Google
+            </a>
+
+            <a href="#" onclick="socialLogin('GitHub')" style="
+              display:flex; align-items:center; justify-content:center; gap:6px;
+              background:white; color:#374151; border:none;
+              padding:9px 16px; border-radius:8px;
+              font-size:13px; font-weight:500; cursor:pointer;
+              text-decoration:none; min-width:80px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#333">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
+
+            <a href="#" onclick="socialLogin('Facebook')" style="
+              display:flex; align-items:center; justify-content:center; gap:6px;
+              background:white; color:#374151; border:none;
+              padding:9px 16px; border-radius:8px;
+              font-size:13px; font-weight:500; cursor:pointer;
+              text-decoration:none; min-width:80px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Facebook
+            </a>
+
+          </div>
+        </div>
+
+        <div class="footer-text">
+            Don't have an account yet? 
+            <a href="/register" class="register-link">Register for free</a>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        function socialLogin(provider) {
+          alert('Demo mode: ' + provider + ' login is not connected.\nUse email/password to sign in.');
+        }
+    </script>
+</body>
+</html>

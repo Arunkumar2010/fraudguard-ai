@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard Overview</h1>
+    <div class="user-info">
+        <span class="user-title">Last updated: Today at 4:30 PM</span>
+    </div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Total Transactions</span>
+        <span class="kpi-value blue">142,384</span>
+        <span class="user-title"><i data-lucide="trending-up" size="14"></i> +12% from last month</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Fraudulent Detected</span>
+        <span class="kpi-value red">248</span>
+        <span class="user-title"><i data-lucide="trending-down" size="14"></i> -3% from last month</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Model Accuracy</span>
+        <span class="kpi-value green">99.94%</span>
+        <span class="user-title">Hybrid Stacking Model</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Alerts Today</span>
+        <span class="kpi-value amber">12</span>
+        <span class="user-title">3 require immediate action</span>
+    </div>
+</div>
+
+<div class="main-grid">
+    <div class="left-column">
+        <div class="card">
+            <div class="card-title">
+                <span>Transaction Volume by Month</span>
+                <i data-lucide="more-horizontal" class="text-muted" style="cursor: pointer;"></i>
+            </div>
+            <div class="chart-container">
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span>Recent High-Risk Transactions</span>
+                <a href="/transactions" class="user-title" style="text-decoration: none; color: var(--accent);">View all</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>Location</th>
+                        <th>Risk Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="status-row">
+                        <td>#TX-9402</td>
+                        <td>$1,240.00</td>
+                        <td>London, UK</td>
+                        <td><span style="color: var(--danger); font-weight: 700;">94%</span></td>
+                        <td><span class="status-badge fraud">Fraudulent</span></td>
+                    </tr>
+                    <tr class="status-row">
+                        <td>#TX-9398</td>
+                        <td>$85.20</td>
+                        <td>New York, US</td>
+                        <td><span style="color: var(--warn); font-weight: 700;">62%</span></td>
+                        <td><span class="status-badge high">High Risk</span></td>
+                    </tr>
+                    <tr class="status-row">
+                        <td>#TX-9395</td>
+                        <td>$450.00</td>
+                        <td>Paris, FR</td>
+                        <td><span style="color: var(--danger); font-weight: 700;">88%</span></td>
+                        <td><span class="status-badge fraud">Fraudulent</span></td>
+                    </tr>
+                    <tr class="status-row">
+                        <td>#TX-9391</td>
+                        <td>$12.50</td>
+                        <td>Berlin, DE</td>
+                        <td><span style="color: var(--safe); font-weight: 700;">12%</span></td>
+                        <td><span class="status-badge legit">Legitimate</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="card">
+            <div class="card-title">Risk Distribution</div>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="riskDonutChart"></canvas>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span class="user-info">Legitimate</span>
+                    <span class="user-info" style="font-weight: 600;">99.8%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="user-info">Fraudulent</span>
+                    <span class="user-info" style="font-weight: 600; color: var(--danger);">0.17%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Model Performance</div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="modelBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Helper to get CSS variables
+    const getStyle = (prop) => getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+
+    // Volume Chart
+    const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volumeCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Transactions',
+                data: [12000, 19000, 15000, 22000, 18000, 24000],
+                backgroundColor: getStyle('--accent'),
+                hoverBackgroundColor: getStyle('--accent2'),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: getStyle('--card'),
+                    titleColor: getStyle('--text'),
+                    bodyColor: getStyle('--text'),
+                    borderColor: getStyle('--border'),
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: getStyle('--border'), borderDash: [5, 5] },
+                    ticks: { color: getStyle('--text2') }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: getStyle('--text2') }
+                }
+            }
+        }
+    });
+
+    // Risk Donut Chart
+    const riskCtx = document.getElementById('riskDonutChart').getContext('2d');
+    new Chart(riskCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Legitimate', 'Fraudulent'],
+            datasets: [{
+                data: [99.83, 0.17],
+                backgroundColor: [getStyle('--safe'), getStyle('--danger')],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Model Performance Chart
+    const modelCtx = document.getElementById('modelBarChart').getContext('2d');
+    new Chart(modelCtx, {
+        type: 'bar',
+        data: {
+            labels: ['RF', 'XGB', 'Hybrid'],
+            datasets: [{
+                label: 'Accuracy',
+                data: [0.95, 0.92, 0.99],
+                backgroundColor: [getStyle('--border'), getStyle('--border'), getStyle('--accent')],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { max: 1, display: false },
+                y: { 
+                    grid: { display: false },
+                    ticks: { color: getStyle('--text2') }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

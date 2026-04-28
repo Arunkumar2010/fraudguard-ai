@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}Real-time Prediction{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Analyze Transaction</h1>
+    <p class="user-info">Input transaction features to perform real-time fraud analysis.</p>
+</div>
+
+<div class="main-grid">
+    <div class="left-column">
+        <div class="card">
+            <div class="card-title">Transaction Details</div>
+            <form action="/predict" method="POST" style="display:flex; flex-direction:column; gap:20px;">
+                
+                <!-- ROW 1 - Transaction Info -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Transaction ID</label>
+                        <input type="text" name="transaction_id" placeholder="TXN-001" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Amount ($)</label>
+                        <input type="number" name="amount" placeholder="0.00" step="0.01" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                </div>
+
+                <!-- ROW 2 - Category -->
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Merchant Category</label>
+                    <select name="category" required 
+                        style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);">
+                        <option value="">-- Select Category --</option>
+                        <option value="food_dining">Food & Dining</option>
+                        <option value="grocery_pos">Grocery / POS</option>
+                        <option value="gas_transport">Gas & Transport</option>
+                        <option value="home">Home</option>
+                        <option value="shopping_net">Shopping (Online)</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="health_fitness">Health & Fitness</option>
+                        <option value="travel">Travel</option>
+                        <option value="personal_care">Personal Care</option>
+                        <option value="misc_net">Miscellaneous</option>
+                    </select>
+                </div>
+
+                <!-- ROW 3 -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Gender</label>
+                        <select name="gender" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Age</label>
+                        <input type="number" name="age" placeholder="25" min="18" max="100" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                </div>
+
+                <!-- ROW 4 -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">City Population</label>
+                        <input type="number" name="city_pop" placeholder="500000" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Job</label>
+                        <input type="text" name="job" placeholder="e.g. Engineer, Teacher..." required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                </div>
+
+                <!-- ROW 5 -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Card Number Last 4</label>
+                        <input type="text" name="card_last4" placeholder="XXXX" maxlength="4" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <label style="font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px;">Transaction Hour</label>
+                        <input type="number" name="hour" placeholder="0-23" min="0" max="23" required 
+                            style="padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-size:13px; outline:none; background:var(--card2); color:var(--text);"/>
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i data-lucide="zap" size="18"></i> Analyze Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="card">
+            <div class="card-title">Analysis Result</div>
+            {% if result %}
+              {% if result.get('error') %}
+                <div style="color:#FF4D6A; text-align:center; padding:20px;">
+                  Error: {{ result.error }}
+                </div>
+
+              {% else %}
+                <!-- Result banner -->
+                <div style="text-align:center; padding:16px 0 20px;">
+                  
+                  {% if result.is_fraud %}
+                  <div style="width:70px;height:70px;border-radius:50%;
+                    background:rgba(255,77,106,0.15);border:3px solid #FF4D6A;
+                    display:flex;align-items:center;justify-content:center;
+                    margin:0 auto 12px;font-size:28px;">⚠</div>
+                  <div style="font-size:18px;font-weight:700;
+                    color:#FF4D6A;margin-bottom:4px;">
+                    FRAUDULENT
+                  </div>
+                  {% else %}
+                  <div style="width:70px;height:70px;border-radius:50%;
+                    background:rgba(16,185,129,0.15);border:3px solid #10B981;
+                    display:flex;align-items:center;justify-content:center;
+                    margin:0 auto 12px;font-size:28px;">✓</div>
+                  <div style="font-size:18px;font-weight:700;
+                    color:#10B981;margin-bottom:4px;">
+                    LEGITIMATE
+                  </div>
+                  {% endif %}
+
+                  <!-- Confidence score -->
+                  <div style="font-size:32px;font-weight:700;margin:8px 0;">
+                    {{ result.confidence }}%
+                  </div>
+                  <div style="font-size:11px;color:var(--text2);margin-bottom:16px;">
+                    Fraud Probability Score
+                  </div>
+
+                  <!-- Risk level badge -->
+                  {% if result.risk_level == 'Critical' %}
+                    <span style="background:rgba(255,77,106,0.15);
+                      color:#FF4D6A;padding:4px 14px;border-radius:20px;
+                      font-size:12px;font-weight:600;">
+                      Risk: {{ result.risk_level }}
+                    </span>
+                  {% elif result.risk_level == 'High' %}
+                    <span style="background:rgba(245,158,11,0.15);
+                      color:#F59E0B;padding:4px 14px;border-radius:20px;
+                      font-size:12px;font-weight:600;">
+                      Risk: {{ result.risk_level }}
+                    </span>
+                  {% elif result.risk_level == 'Medium' %}
+                    <span style="background:rgba(129,140,248,0.15);
+                      color:#818CF8;padding:4px 14px;border-radius:20px;
+                      font-size:12px;font-weight:600;">
+                      Risk: {{ result.risk_level }}
+                    </span>
+                  {% else %}
+                    <span style="background:rgba(16,185,129,0.15);
+                      color:#10B981;padding:4px 14px;border-radius:20px;
+                      font-size:12px;font-weight:600;">
+                      Risk: {{ result.risk_level }}
+                    </span>
+                  {% endif %}
+                </div>
+
+                <!-- Model scores breakdown -->
+                <div style="border-top:1px solid var(--border);
+                  padding-top:16px;margin-top:8px;">
+                  <div style="font-size:11px;font-weight:500;
+                    margin-bottom:12px;color:var(--text2);">
+                    Model Score Breakdown
+                  </div>
+                  <div style="display:flex;justify-content:space-around;
+                    margin-bottom:16px;">
+                    <div style="text-align:center;">
+                      <div style="font-size:10px;color:var(--text2);">Random Forest</div>
+                      <div style="font-size:16px;font-weight:600;
+                        color:#818CF8;">{{ result.rf_score }}%</div>
+                    </div>
+                    <div style="text-align:center;">
+                      <div style="font-size:10px;color:var(--text2);">XGBoost</div>
+                      <div style="font-size:16px;font-weight:600;
+                        color:#F59E0B;">{{ result.xgb_score }}%</div>
+                    </div>
+                    <div style="text-align:center;">
+                      <div style="font-size:10px;color:var(--text2);">Hybrid</div>
+                      <div style="font-size:16px;font-weight:600;
+                        color:{% if result.is_fraud %}#FF4D6A
+                              {% else %}#10B981{% endif %};">
+                        {{ result.confidence }}%
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Transaction summary -->
+                  <div style="background:var(--card2);border-radius:8px;
+                    padding:12px;font-size:12px;">
+                    <div style="display:flex;justify-content:space-between;
+                      padding:4px 0;border-bottom:1px solid var(--border);">
+                      <span style="color:var(--text2);">Transaction ID</span>
+                      <span style="font-weight:500;">{{ result.transaction_id }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;
+                      padding:4px 0;border-bottom:1px solid var(--border);">
+                      <span style="color:var(--text2);">Amount</span>
+                      <span style="font-weight:500;">${{ result.amount }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;
+                      padding:4px 0;border-bottom:1px solid var(--border);">
+                      <span style="color:var(--text2);">Category</span>
+                      <span style="font-weight:500;">{{ result.category }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;
+                      padding:4px 0;">
+                      <span style="color:var(--text2);">Model Used</span>
+                      <span style="font-weight:500;color:#818CF8;font-size:10px;">
+                        {{ result.model_used }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% else %}
+              <div style="text-align:center;padding:40px 20px;">
+                <div style="font-size:36px;margin-bottom:12px;
+                  color:var(--text3);">◎</div>
+                <div style="font-size:13px;color:var(--text2);">
+                  Fill the form and click Analyze to perform 
+                  real-time fraud detection.
+                </div>
+              </div>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <div class="card-title">Model Diagnostics</div>
+            <p class="user-info" style="font-size: 13px;">Our hybrid engine analyzes this transaction across 30 latent features derived from the provided profile data.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

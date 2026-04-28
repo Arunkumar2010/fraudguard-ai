@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Batch Upload{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Batch Transaction Analysis</h1>
+    <p class="user-info">Process multiple transactions simultaneously via CSV upload.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error" style="margin-bottom: 2rem; padding: 1rem; border-radius: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--fraud);">
+    <i data-lucide="alert-circle" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"></i>
+    <span style="color: var(--fraud); font-weight: 600;">Error: {{ error }}</span>
+</div>
+{% endif %}
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Required Columns</span>
+        <span style="font-size: 0.9rem; font-weight: 600; margin-top: 0.5rem;">Time, Amount, V1-V28</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Max File Size</span>
+        <span style="font-size: 1.2rem; font-weight: 700; color: var(--accent2);">25 MB</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Processing Time</span>
+        <span style="font-size: 1.2rem; font-weight: 700; color: var(--safe);">~2s / 100 rows</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Supported Formats</span>
+        <span style="font-size: 1.2rem; font-weight: 700;">CSV Only</span>
+    </div>
+</div>
+
+<div class="card" style="padding: 3rem;">
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <i data-lucide="upload-cloud" class="upload-icon"></i>
+            {% if filename %}
+                <h3>File selected: {{ filename }}</h3>
+                <p class="user-info" style="margin-top: 0.5rem;">Click to change file or analyze again.</p>
+            {% else %}
+                <h3>Click or Drag CSV here</h3>
+                <p class="user-info" style="margin-top: 0.5rem;">Only .csv files are supported for this version.</p>
+            {% endif %}
+            <input type="file" id="fileInput" name="file" accept=".csv" style="display: none;" onchange="this.form.submit()">
+        </div>
+        <div style="margin-top: 2rem; text-align: center;">
+            <p class="user-info">Make sure your CSV follows the Kaggle Credit Card dataset format.</p>
+        </div>
+    </form>
+</div>
+
+{% if results %}
+<div class="card" style="padding: 0;">
+    <div class="card-title" style="padding: 1.5rem 1.5rem 0.5rem 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <span>Batch Analysis Results ({{ results|length }} rows)</span>
+        <form method="POST" action="/download-report"
+              id="download-form">
+          <input type="hidden" name="results_data"
+                 id="results-hidden" value="[]"/>
+          <button type="submit" style="
+            padding: 8px 20px;
+            background: #7C3AED;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;">
+            ⬇ Download Excel Report
+          </button>
+        </form>
+
+        <script>
+          const reportData = {{ results | tojson }};
+          document.getElementById('results-hidden').value =
+              JSON.stringify(reportData);
+        </script>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Risk Score</th>
+                <th>Level</th>
+                <th>Model Used</th>
+                <th>Decision</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for res in results %}
+            <tr class="status-row">
+                <td style="font-family: monospace; font-weight: 600;">{{ res.tx_id }}</td>
+                <td>${{ "{:,.2f}".format(res.amount) }}</td>
+                <td style="font-weight: 700; color: {% if res.fraud_prob >= 75 %}var(--fraud){% elif res.fraud_prob >= 45 %}#f59e0b{% else %}var(--safe){% endif %};">
+                    {{ res.fraud_prob }}%
+                </td>
+                <td>
+                    <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.05);">
+                        {{ res.risk_level }}
+                    </span>
+                </td>
+                <td style="font-size: 0.85rem; color: var(--text-dim);">{{ res.model_used }}</td>
+                <td>
+                    <span class="status-badge {{ 'fraud' if res.is_fraud else 'legit' }}">
+                        {{ 'Fraudulent' if res.is_fraud else 'Legitimate' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

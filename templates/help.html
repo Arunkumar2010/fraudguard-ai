@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+
+  <div style="margin-bottom:24px;">
+    <div style="font-size:20px;font-weight:600;
+      color:var(--text);">Help & Support</div>
+    <div style="font-size:13px;color:var(--text2);margin-top:4px;">
+      Find answers and get help with FraudGuard AI
+    </div>
+  </div>
+
+  <!-- Search help -->
+  <div style="background:linear-gradient(135deg,#7C3AED,#A855F7);
+    border-radius:12px;padding:28px;text-align:center;
+    margin-bottom:20px;">
+    <div style="font-size:18px;font-weight:600;
+      color:white;margin-bottom:8px;">
+      How can we help you?
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.8);
+      margin-bottom:16px;">
+      Search our documentation or browse topics below
+    </div>
+    <div style="display:flex;gap:8px;max-width:400px;margin:0 auto;">
+      <input placeholder="Search help articles..." style="
+        flex:1;padding:10px 16px;border-radius:8px;
+        border:none;font-size:13px;outline:none;
+        background:rgba(255,255,255,0.15);
+        color:white;"/>
+      <button style="padding:10px 20px;background:white;
+        color:#7C3AED;border:none;border-radius:8px;
+        font-size:13px;font-weight:600;cursor:pointer;">
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick help cards -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);
+    gap:14px;margin-bottom:20px;">
+    <div style="background:var(--card);border:1px solid var(--border);
+      border-radius:10px;padding:20px;text-align:center;cursor:pointer;"
+      onclick="alert('Documentation - Demo mode')">
+      <div style="font-size:24px;margin-bottom:8px;">📖</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);">
+        Documentation
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px;">
+        Guides & tutorials
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);
+      border-radius:10px;padding:20px;text-align:center;cursor:pointer;"
+      onclick="alert('Video tutorials - Demo mode')">
+      <div style="font-size:24px;margin-bottom:8px;">🎥</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);">
+        Video Tutorials
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px;">
+        Step-by-step videos
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);
+      border-radius:10px;padding:20px;text-align:center;cursor:pointer;"
+      onclick="alert('Contact support - Demo mode')">
+      <div style="font-size:24px;margin-bottom:8px;">💬</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);">
+        Contact Support
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px;">
+        Get direct help
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;margin-bottom:20px;">
+    <div style="padding:14px 20px;font-size:11px;font-weight:500;
+      color:var(--text3);text-transform:uppercase;
+      letter-spacing:.5px;background:var(--bg);
+      border-bottom:1px solid var(--border);">
+      Frequently Asked Questions
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(1)">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;">
+        <span style="font-size:13px;font-weight:500;color:var(--text);">
+          How does the hybrid fraud detection model work?
+        </span>
+        <span id="faq-icon-1" style="color:var(--text2);">+</span>
+      </div>
+      <div id="faq-body-1" style="display:none;margin-top:10px;
+        font-size:12px;color:var(--text2);line-height:1.7;">
+        FraudGuard AI uses a stacking ensemble combining Random Forest 
+        and XGBoost as base classifiers, with Logistic Regression as 
+        the meta-learner. An Autoencoder detects anomalies in transaction 
+        patterns. Together they achieve 99.98% accuracy on the Kaggle 
+        Credit Card Fraud Detection dataset.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(2)">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;">
+        <span style="font-size:13px;font-weight:500;color:var(--text);">
+          What dataset is used for training?
+        </span>
+        <span id="faq-icon-2" style="color:var(--text2);">+</span>
+      </div>
+      <div id="faq-body-2" style="display:none;margin-top:10px;
+        font-size:12px;color:var(--text2);line-height:1.7;">
+        The model is trained on the Kaggle Credit Card Fraud Detection 
+        dataset containing 284,807 transactions made by European 
+        cardholders. Only 492 (0.17%) are fraudulent, making it a 
+        highly imbalanced dataset. We use SMOTE to handle this imbalance.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(3)">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;">
+        <span style="font-size:13px;font-weight:500;color:var(--text);">
+          How do I upload a CSV for batch prediction?
+        </span>
+        <span id="faq-icon-3" style="color:var(--text2);">+</span>
+      </div>
+      <div id="faq-body-3" style="display:none;margin-top:10px;
+        font-size:12px;color:var(--text2);line-height:1.7;">
+        Go to Upload CSV page from the sidebar. Your CSV must contain 
+        columns: Time, Amount, V1-V28 (or our user-friendly format). 
+        Maximum file size is 50MB. Results will show fraud probability 
+        for each transaction.
+      </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(4)" 
+      style="border-bottom:none;">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;">
+        <span style="font-size:13px;font-weight:500;color:var(--text);">
+          What does the Risk Score mean?
+        </span>
+        <span id="faq-icon-4" style="color:var(--text2);">+</span>
+      </div>
+      <div id="faq-body-4" style="display:none;margin-top:10px;
+        font-size:12px;color:var(--text2);line-height:1.7;">
+        Risk Score is the fraud probability (0-100%). 
+        Low (0-20%): Safe transaction. 
+        Medium (20-45%): Monitor closely. 
+        High (45-75%): Likely fraudulent. 
+        Critical (75-100%): Immediate action required.
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:20px;">
+    <div style="font-size:13px;font-weight:500;color:var(--text);
+      margin-bottom:14px;">Still need help?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;
+        padding:12px;background:var(--bg);border-radius:8px;">
+        <span style="font-size:20px;">📧</span>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text);">
+            Email Us
+          </div>
+          <div style="font-size:11px;color:#7C3AED;">
+            fraudguard@ai.com
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;
+        padding:12px;background:var(--bg);border-radius:8px;">
+        <span style="font-size:20px;">📍</span>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text);">
+            Location
+          </div>
+          <div style="font-size:11px;color:var(--text2);">
+            Chennai, Tamil Nadu, India
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.faq-item {
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  transition:background .15s;
+}
+.faq-item:hover { background:var(--bg); }
+</style>
+
+<script>
+function toggleFaq(n) {
+  const body = document.getElementById('faq-body-'+n);
+  const icon = document.getElementById('faq-icon-'+n);
+  const isOpen = body.style.display === 'block';
+  body.style.display = isOpen ? 'none' : 'block';
+  icon.textContent = isOpen ? '+' : '−';
+}
+</script>
+{% endblock %}

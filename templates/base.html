@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudGuard AI | {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Lucide Icons or Font Awesome (using SVG icons for simplicity via Lucide CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* LIGHT THEME (default) */
+        :root {
+            --bg: #F7F8FA;
+            --sidebar: #FFFFFF;
+            --card: #FFFFFF;
+            --card2: #F3F4F6;
+            --border: #E5E7EB;
+            --text: #111827;
+            --text2: #6B7280;
+            --text3: #9CA3AF;
+            --accent: #2563EB;
+            --accent2: #3B82F6;
+            --accent2-rgb: 59, 130, 246;
+            --accent-light: #EFF6FF;
+            --danger: #DC2626;
+            --danger-rgb: 220, 38, 38;
+            --safe: #16A34A;
+            --safe-rgb: 22, 163, 74;
+            --warn: #D97706;
+            --warn-rgb: 217, 119, 6;
+            --blue: #2563EB;
+            --blue-rgb: 37, 99, 235;
+            --topbar: #FFFFFF;
+        }
+
+        /* DARK THEME */
+        :root.dark {
+            --bg: #0D0520;
+            --sidebar: #130A2E;
+            --card: #1A0F3C;
+            --card2: #1F1247;
+            --border: #2D1F5E;
+            --text: #F0EAFF;
+            --text2: #9B8EC4;
+            --text3: #6B5F94;
+            --accent: #7C3AED;
+            --accent2: #A855F7;
+            --accent2-rgb: 168, 85, 247;
+            --accent-light: #EDE9FE;
+            --danger: #FF4D6A;
+            --danger-rgb: 255, 77, 106;
+            --safe: #10B981;
+            --safe-rgb: 16, 185, 129;
+            --warn: #F59E0B;
+            --warn-rgb: 245, 158, 11;
+            --blue: #818CF8;
+            --blue-rgb: 129, 140, 248;
+            --topbar: #130A2E;
+        }
+
+        /* PURPLE THEME */
+        :root.purple {
+            --bg: #0D0520;
+            --sidebar: #130A2E;
+            --card: #1A0F3C;
+            --card2: #1F1247;
+            --border: #2D1F5E;
+            --text: #F0EAFF;
+            --text2: #9B8EC4;
+            --text3: #6B5F94;
+            --accent: #7C3AED;
+            --accent2: #A855F7;
+            --accent2-rgb: 168, 85, 247;
+            --accent-light: #EDE9FE;
+            --danger: #FF4D6A;
+            --danger-rgb: 255, 77, 106;
+            --safe: #10B981;
+            --safe-rgb: 16, 185, 129;
+            --warn: #F59E0B;
+            --warn-rgb: 245, 158, 11;
+            --blue: #818CF8;
+            --blue-rgb: 129, 140, 248;
+            --topbar: #130A2E;
+        }
+
+        /* Dropdown Styling */
+        .dropdown-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            min-width: 280px;
+            z-index: 1100;
+            margin-top: 10px;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        .dropdown-panel.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .dropdown-footer {
+            padding: 12px 16px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: var(--text2);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--card2);
+            color: var(--text);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .notification-meta {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 4px;
+        }
+
+        .profile-dropdown-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider {
+            height: 1px;
+            background-color: var(--border);
+            margin: 4px 0;
+        }
+
+        .sign-out {
+            color: var(--danger) !important;
+        }
+
+        /* Specific positions */
+        .notification-container, .profile-container {
+            position: relative;
+        }
+
+        .bell-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--sidebar);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <svg width="32" height="32" viewBox="0 0 32 32" style="margin-right: 10px;">
+                <defs>
+                    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M16 4 L26 8 L26 18 C26 24 16 28 16 28 C16 28 6 24 6 18 L6 8 L16 4 Z" fill="url(#purpleGrad)" />
+                <path d="M18 10 L14 16 L17 16 L15 22 L20 16 L17 16 L18 10 Z" fill="white" />
+            </svg>
+            <span style="color: var(--text); font-weight: 800;">FraudGuard AI</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item {{ 'active' if active_page == 'dashboard' }}">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/transactions" class="nav-item {{ 'active' if active_page == 'transactions' }}">
+                <i data-lucide="list"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="/alerts" class="nav-item {{ 'active' if active_page == 'alerts' }}">
+                <i data-lucide="bell"></i>
+                <span>Alerts</span>
+                <span class="badge">3</span>
+            </a>
+            <a href="/predict" class="nav-item {{ 'active' if active_page == 'predict' }}">
+                <i data-lucide="Zap"></i>
+                <span>Predict</span>
+            </a>
+            <a href="/model-insights" class="nav-item {{ 'active' if active_page == 'insights' }}">
+                <i data-lucide="bar-chart-3"></i>
+                <span>Model Insights</span>
+            </a>
+            <a href="/upload" class="nav-item {{ 'active' if active_page == 'upload' }}">
+                <i data-lucide="upload-cloud"></i>
+                <span>Upload CSV</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="top-navbar">
+            <div class="search-box">
+                <i data-lucide="search" size="18"></i>
+                <input type="text" placeholder="Search transactions, users..." style="background: transparent; color: var(--text);">
+            </div>
+            
+            <div class="navbar-right">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" onclick="toggleTheme()" style="
+                    width: 44px; height: 24px;
+                    background: var(--accent);
+                    border: none; border-radius: 12px;
+                    cursor: pointer; position: relative;
+                    transition: background 0.3s;
+                    flex-shrink: 0;
+                    margin-right: 15px;
+                    display: flex; align-items: center;
+                ">
+                    <span id="toggle-knob" style="
+                        position: absolute; top: 3px; left: 3px;
+                        width: 18px; height: 18px;
+                        background: white; border-radius: 50%;
+                        transition: transform 0.3s;
+                        display: flex; align-items: center; 
+                        justify-content: center; font-size: 10px;
+                    ">☀️</span>
+                </button>
+
+                <!-- Notifications -->
+                <div class="notification-container">
+                    <div class="notification" id="bellBtn">
+                        <i data-lucide="bell"></i>
+                        <span class="bell-badge" id="bellBadge">3</span>
+                    </div>
+                    
+                    <div class="dropdown-panel" id="notificationDropdown">
+                        <div class="dropdown-header">
+                            <span>Notifications</span>
+                            <a href="#" style="color: var(--accent2); font-size: 11px; text-decoration: none;">Mark all read</a>
+                        </div>
+                        
+                        <div class="dropdown-item">
+                            <div class="status-dot" style="background-color: var(--danger);"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">High risk transaction detected</div>
+                                <div class="notification-meta">TXN-001 • 2 min ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-item">
+                            <div class="status-dot" style="background-color: var(--warn);"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">New alert requires review</div>
+                                <div class="notification-meta">ALT-002 • 5 min ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-item">
+                            <div class="status-dot" style="background-color: var(--safe);"></div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">Model accuracy updated</div>
+                                <div class="notification-meta">+0.3% improvement • 1 hr ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-footer">
+                            <a href="/alerts" style="color: var(--accent2); text-decoration: none; font-weight: 600;">View all alerts</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile -->
+                <div class="profile-container">
+                    <div class="user-profile" id="profileBtn">
+                        <div class="avatar">{{ current_initials }}</div>
+                        <div class="user-info">
+                            <div style="font-weight: 600;">{{ current_user }}</div>
+                            <div class="user-title">Fraud Analyst</div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-panel" id="profileDropdown" style="min-width: 240px;">
+                        <div class="profile-dropdown-header">
+                            <div class="avatar">{{ current_initials }}</div>
+                            <div>
+                                <div style="font-weight: 700;">{{ current_user }}</div>
+                                <div class="user-title">Fraud Analyst</div>
+                            </div>
+                        </div>
+                        
+                        <a href="/profile" class="dropdown-item">
+                            <i data-lucide="user" size="16"></i>
+                            <span>Profile Settings</span>
+                        </a>
+                        <a href="/preferences" class="dropdown-item">
+                            <i data-lucide="settings" size="16"></i>
+                            <span>Preferences</span>
+                        </a>
+                        <a href="/help" class="dropdown-item">
+                            <i data-lucide="help-circle" size="16"></i>
+                            <span>Help & Support</span>
+                        </a>
+                        
+                        <div class="divider"></div>
+                        
+                        <a href="/logout" class="dropdown-item sign-out">
+                            <i data-lucide="log-out" size="16"></i>
+                            <span>Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Navbar Dropdown Logic
+        const bellBtn = document.getElementById('bellBtn');
+        const bellBadge = document.getElementById('bellBadge');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle Notifications
+        bellBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('show');
+            profileDropdown.classList.remove('show');
+            
+            // Hide badge when opening
+            if (notificationDropdown.classList.contains('show')) {
+                bellBadge.style.display = 'none';
+            }
+        });
+
+        // Toggle Profile
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+            notificationDropdown.classList.remove('show');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!notificationDropdown.contains(e.target) && e.target !== bellBtn) {
+                notificationDropdown.classList.remove('show');
+            }
+            if (!profileDropdown.contains(e.target) && e.target !== profileBtn) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Prevent closing when clicking inside panels
+        notificationDropdown.addEventListener('click', (e) => e.stopPropagation());
+        profileDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+        function toggleTheme() {
+            const root = document.documentElement;
+            const knob = document.getElementById('toggle-knob');
+            const btn = document.getElementById('theme-toggle');
+            
+            if (root.classList.contains('dark') || root.classList.contains('purple')) {
+                root.classList.remove('dark', 'purple');
+                knob.textContent = '☀️';
+                knob.style.transform = 'translateX(0px)';
+                btn.style.background = '#2563EB';
+                localStorage.setItem('theme', 'light');
+            } else {
+                root.classList.add('dark');
+                knob.textContent = '🌙';
+                knob.style.transform = 'translateX(20px)';
+                btn.style.background = '#7C3AED';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Apply saved theme on page load
+        (function() {
+            const saved = localStorage.getItem('theme');
+            const root = document.documentElement;
+            const knob = document.getElementById('toggle-knob');
+            const btn = document.getElementById('theme-toggle');
+            
+            if (saved === 'dark' || saved === 'purple') {
+                root.classList.add(saved === 'purple' ? 'purple' : 'dark');
+                if (knob) {
+                    knob.textContent = '🌙';
+                    knob.style.transform = 'translateX(20px)';
+                }
+                if (btn) btn.style.background = '#7C3AED';
+            } else {
+                // Default light mode
+                if (knob) {
+                    knob.textContent = '☀️';
+                    knob.style.transform = 'translateX(0px)';
+                }
+                if (btn) btn.style.background = '#2563EB';
+            }
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

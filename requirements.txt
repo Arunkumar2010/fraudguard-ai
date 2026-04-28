@@ -1,0 +1,12 @@
+flask
+pandas
+numpy
+scikit-learn
+xgboost
+tensorflow
+imbalanced-learn
+matplotlib
+seaborn
+openpyxl
+keras-tuner
+gunicorn

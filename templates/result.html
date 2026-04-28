@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result{% endblock %}
+{% block content %}
+<div class="card result-box">
+    <h2>Analysis Result</h2>
+    {% if result == 1 %}
+    <div class="fraud">⚠️ FRAUD DETECTED</div>
+    <p style="margin-top: 1rem;">This transaction shows high anomaly patterns consistent with fraudulent activity.</p>
+    {% else %}
+    <div class="safe">✅ TRANSACTION SAFE</div>
+    <p style="margin-top: 1rem;">This transaction appears to be legitimate based on current model analysis.</p>
+    {% endif %}
+    
+    <div style="margin-top: 2rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 10px;">
+        <h3>Confidence Score</h3>
+        <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">{{ "%.2f"|format(confidence * 100) }}%</p>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <a href="/" class="btn">Analyze Another</a>
+    </div>
+</div>
+{% endblock %}

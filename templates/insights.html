@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}Model Insights{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Model Insights</h1>
+    <div class="user-info">
+        <span class="status-badge legit">LIVE MODEL v1.2</span>
+    </div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Precision</span>
+        <span class="kpi-value green">{{ "%.2f"|format(model_data.hybrid.precision) }}%</span>
+        <span class="user-title">Minimal false positives</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Recall</span>
+        <span class="kpi-value blue">{{ "%.2f"|format(model_data.hybrid.recall) }}%</span>
+        <span class="user-title">Capture rate of fraud</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">F1-Score</span>
+        <span class="kpi-value amber">{{ "%.2f"|format(model_data.hybrid.f1) }}%</span>
+        <span class="user-title">Balanced performance</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">ROC AUC</span>
+        <span class="kpi-value blue">{{ "%.4f"|format(model_data.hybrid.auc) }}</span>
+        <span class="user-title">Overall robustness</span>
+    </div>
+</div>
+
+<div class="main-grid">
+    <div class="left-column">
+        <div class="card">
+            <div class="card-title">Model Comparison Metrics</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1</th>
+                        <th>AUC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="status-row">
+                        <td style="font-weight: 600;">Random Forest</td>
+                        <td>{{ model_data.rf.accuracy }}%</td>
+                        <td>{{ model_data.rf.precision }}%</td>
+                        <td>{{ model_data.rf.recall }}%</td>
+                        <td>{{ model_data.rf.f1 }}%</td>
+                        <td>{{ model_data.rf.auc }}</td>
+                    </tr>
+                    <tr class="status-row">
+                        <td style="font-weight: 600;">XGBoost</td>
+                        <td>{{ model_data.xgb.accuracy }}%</td>
+                        <td>{{ model_data.xgb.precision }}%</td>
+                        <td>{{ model_data.xgb.recall }}%</td>
+                        <td>{{ model_data.xgb.f1 }}%</td>
+                        <td>{{ model_data.xgb.auc }}</td>
+                    </tr>
+                    <tr class="status-row">
+                        <td style="font-weight: 600;">Hybrid Stacking</td>
+                        <td style="color:var(--safe); font-weight:700;">{{ model_data.hybrid.accuracy }}%</td>
+                        <td>{{ model_data.hybrid.precision }}%</td>
+                        <td>{{ model_data.hybrid.recall }}%</td>
+                        <td>{{ model_data.hybrid.f1 }}%</td>
+                        <td>{{ model_data.hybrid.auc }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <div class="card-title">ROC Curve Analysis</div>
+            <div class="chart-container" style="display: flex; justify-content: center; align-items: center;">
+                <img src="/static/roc_curve.png" alt="ROC Curve" style="max-height: 100%; border-radius: 8px;">
+            </div>
+            <p class="user-info" style="margin-top: 1rem; text-align: center;">
+                The curve shows the trade-off between sensitivity and specificity across different thresholds.
+            </p>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="card">
+            <div class="card-title">Hybrid Model Weights</div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="metricsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Weekly Performance</div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Helper to get CSS variables
+    const getStyle = (prop) => getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+
+    // Metrics Bar Chart
+    const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+    const metricsColors = [getStyle('--safe'), getStyle('--blue'), getStyle('--warn'), getStyle('--accent')];
+    
+    // Metrics Data from Flask
+    const metricsData = [
+        {{ model_data.hybrid.precision / 100 }}, 
+        {{ model_data.hybrid.recall / 100 }}, 
+        {{ model_data.hybrid.f1 / 100 }}, 
+        {{ model_data.hybrid.accuracy / 100 }}
+    ];
+
+    new Chart(metricsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Precision', 'Recall', 'F1', 'Accuracy'],
+            datasets: [{
+                data: metricsData,
+                backgroundColor: metricsColors,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    max: 1, 
+                    grid: { color: getStyle('--border'), borderDash: [5, 5] },
+                    ticks: { color: getStyle('--text2') }
+                },
+                x: {
+                    ticks: { color: getStyle('--text2') }
+                }
+            }
+        }
+    });
+
+    // Weekly Performance
+    const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+    new Chart(weeklyCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Fraud Alerts',
+                data: [12, 19, 13, 15, 22, 5, 8],
+                borderColor: getStyle('--accent2'),
+                backgroundColor: `rgba(${getStyle('--accent2-rgb')}, 0.1)`,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: getStyle('--border') },
+                    ticks: { color: getStyle('--text2') }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: getStyle('--text2') }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

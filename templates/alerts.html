@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Alerts{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Fraud Alerts</h1>
+    <div class="user-info">
+        <span class="status-badge critical">3 CRITICAL</span>
+    </div>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Pending Reviews</span>
+        <span class="kpi-value">12</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Critical Alerts</span>
+        <span class="kpi-value red">3</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Avg. Response Time</span>
+        <span class="kpi-value">4.2m</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Resolution Rate</span>
+        <span class="kpi-value green">94%</span>
+    </div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for alert in alerts %}
+    <div class="alert-card">
+        <div class="alert-header">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-weight: 700; font-size: 1.1rem;">{{ alert.id }}</span>
+                <span class="status-badge {{ alert.type_class }}">{{ alert.type }}</span>
+                <span class="status-badge pending">PENDING</span>
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">{{ alert.timestamp }}</div>
+        </div>
+
+        <div style="margin: 1rem 0;">
+            <p style="font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem; color: var(--danger);">{{ alert.title }}</p>
+            <p class="user-info">{{ alert.description }}</p>
+        </div>
+
+        <div class="alert-meta">
+            <div class="meta-item">
+                <span class="meta-label">Transaction ID:</span>
+                <span style="font-weight: 600;">{{ alert.txn_id }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Location:</span>
+                <span style="font-weight: 600;">{{ alert.location }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Amount:</span>
+                <span style="font-weight: 600;">{{ alert.amount }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Risk Confidence:</span>
+                <span style="font-weight: 600; color: var(--danger);">{{ alert.risk_pct }}%</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button onclick="approveAlert('{{ alert.id }}', this)" style="
+              display:flex; align-items:center; gap:6px;
+              padding:9px 20px; background:#16A34A;
+              color:white; border:none; border-radius:8px;
+              font-size:13px; font-weight:500; cursor:pointer;">
+              ✓ Approve Legitimate
+            </button>
+            <button onclick="rejectAlert('{{ alert.id }}', this)" style="
+              display:flex; align-items:center; gap:6px;
+              padding:9px 20px; background:transparent;
+              color:#FF4D6A; border:1px solid #FF4D6A;
+              border-radius:8px; font-size:13px;
+              font-weight:500; cursor:pointer;">
+              ✕ Reject & Flag Fraud
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function approveAlert(alertId, btn) {
+  btn.disabled = true;
+  btn.innerHTML = 'Processing...';
+  
+  fetch('/alerts/approve/' + alertId, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'}
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Server error');
+    return response.json();
+  })
+  .then(data => {
+    if (data.status === 'success') {
+      btn.innerHTML = '✓ Approved';
+      btn.style.background = '#059669';
+      const card = btn.closest('.alert-card') || 
+                   btn.closest('div[style*="border"]') || 
+                   btn.parentElement.parentElement.parentElement;
+      card.style.opacity = '0.5';
+      card.style.pointerEvents = 'none';
+      showToast('✓ ' + alertId + ' approved as legitimate!', 'success');
+    }
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = '✓ Approve Legitimate';
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function rejectAlert(alertId, btn) {
+  btn.disabled = true;
+  btn.innerHTML = 'Processing...';
+  
+  fetch('/alerts/reject/' + alertId, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'}
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Server error');
+    return response.json();
+  })
+  .then(data => {
+    if (data.status === 'success') {
+      btn.innerHTML = '✕ Flagged as Fraud';
+      btn.style.background = '#FF4D6A';
+      btn.style.color = 'white';
+      btn.style.border = 'none';
+      const card = btn.closest('.alert-card') ||
+                   btn.closest('div[style*="border"]') ||
+                   btn.parentElement.parentElement.parentElement;
+      card.style.opacity = '0.5';
+      card.style.pointerEvents = 'none';
+      showToast('⚠ ' + alertId + ' flagged as fraud!', 'danger');
+    }
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = '✕ Reject & Flag Fraud';
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function showToast(msg, type) {
+  const colors = {success:'#16A34A', danger:'#FF4D6A', error:'#FF4D6A'};
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position:fixed; top:20px; right:20px;
+    background:${colors[type]||'#16A34A'};
+    color:white; padding:12px 20px;
+    border-radius:10px; font-size:13px;
+    font-weight:500; z-index:9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    animation: slideIn .3s ease;`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.opacity='0';
+    toast.style.transition='opacity .3s';
+    setTimeout(()=>toast.remove(),300);
+  },3000);
+}
+</script>
+
+<style>
+@keyframes slideIn {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+</style>
+{% endblock %}

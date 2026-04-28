@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+
+  <div style="margin-bottom:24px;">
+    <div style="font-size:20px;font-weight:600;
+      color:var(--text);">Preferences</div>
+    <div style="font-size:13px;color:var(--text2);margin-top:4px;">
+      Customize your FraudGuard AI experience
+    </div>
+  </div>
+
+  <!-- Appearance -->
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:12px;margin-bottom:16px;overflow:hidden;">
+    <div style="padding:14px 20px;font-size:11px;font-weight:500;
+      color:var(--text3);text-transform:uppercase;
+      letter-spacing:.5px;background:var(--bg);
+      border-bottom:1px solid var(--border);">
+      Appearance
+    </div>
+    
+    <div style="padding:16px 20px;display:flex;
+      justify-content:space-between;align-items:center;
+      border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:500;
+          color:var(--text);">Theme</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">
+          Switch between light and dark mode
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="setTheme('light')" id="btn-light" style="
+          padding:6px 16px;border-radius:7px;font-size:12px;
+          font-weight:500;cursor:pointer;
+          background:var(--bg);border:1px solid var(--border);
+          color:var(--text);">☀️ Light</button>
+        <button onclick="setTheme('dark')" id="btn-dark" style="
+          padding:6px 16px;border-radius:7px;font-size:12px;
+          font-weight:500;cursor:pointer;
+          background:#7C3AED;border:1px solid #7C3AED;
+          color:white;">🌙 Dark</button>
+      </div>
+    </div>
+
+    <div style="padding:16px 20px;display:flex;
+      justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:13px;font-weight:500;
+          color:var(--text);">Sidebar Collapsed</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">
+          Start with collapsed sidebar by default
+        </div>
+      </div>
+      <label style="position:relative;display:inline-block;
+        width:44px;height:24px;">
+        <input type="checkbox" style="opacity:0;width:0;height:0;"
+          onchange="togglePref('sidebar')"/>
+        <span style="position:absolute;cursor:pointer;
+          top:0;left:0;right:0;bottom:0;
+          background:var(--border);border-radius:12px;
+          transition:.3s;" id="toggle-sidebar"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:12px;margin-bottom:16px;overflow:hidden;">
+    <div style="padding:14px 20px;font-size:11px;font-weight:500;
+      color:var(--text3);text-transform:uppercase;
+      letter-spacing:.5px;background:var(--bg);
+      border-bottom:1px solid var(--border);">
+      Notifications
+    </div>
+
+    <div style="padding:16px 20px;display:flex;
+      justify-content:space-between;align-items:center;
+      border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:500;
+          color:var(--text);">Fraud Alerts</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">
+          Get notified when fraud is detected
+        </div>
+      </div>
+      <div style="padding:4px 12px;background:rgba(16,185,129,0.15);
+        color:#10B981;border-radius:20px;font-size:11px;font-weight:500;">
+        Enabled
+      </div>
+    </div>
+
+    <div style="padding:16px 20px;display:flex;
+      justify-content:space-between;align-items:center;
+      border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:500;
+          color:var(--text);">Email Notifications</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">
+          Send alerts to your email
+        </div>
+      </div>
+      <div style="padding:4px 12px;background:rgba(16,185,129,0.15);
+        color:#10B981;border-radius:20px;font-size:11px;font-weight:500;">
+        Enabled
+      </div>
+    </div>
+
+    <div style="padding:16px 20px;display:flex;
+      justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:13px;font-weight:500;
+          color:var(--text);">Daily Summary Report</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">
+          Receive daily fraud detection summary
+        </div>
+      </div>
+      <div style="padding:4px 12px;background:rgba(245,158,11,0.15);
+        color:#F59E0B;border-radius:20px;font-size:11px;font-weight:500;">
+        Disabled
+      </div>
+    </div>
+  </div>
+
+  <!-- Language & Region -->
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:12px;margin-bottom:16px;overflow:hidden;">
+    <div style="padding:14px 20px;font-size:11px;font-weight:500;
+      color:var(--text3);text-transform:uppercase;
+      letter-spacing:.5px;background:var(--bg);
+      border-bottom:1px solid var(--border);">
+      Language & Region
+    </div>
+    <div style="padding:20px;display:grid;
+      grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <label style="font-size:12px;color:var(--text2);
+          display:block;margin-bottom:6px;">Language</label>
+        <select style="width:100%;padding:9px 12px;
+          background:var(--bg);border:1px solid var(--border);
+          border-radius:8px;font-size:13px;color:var(--text);
+          outline:none;">
+          <option>English</option>
+          <option>Tamil</option>
+          <option>Hindi</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text2);
+          display:block;margin-bottom:6px;">Time Zone</label>
+        <select style="width:100%;padding:9px 12px;
+          background:var(--bg);border:1px solid var(--border);
+          border-radius:8px;font-size:13px;color:var(--text);
+          outline:none;">
+          <option>Asia/Kolkata (IST +5:30)</option>
+          <option>America/New_York (EST)</option>
+          <option>Europe/London (GMT)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save button -->
+  <button onclick="savePrefs()" style="
+    padding:10px 32px;background:#7C3AED;
+    color:white;border:none;border-radius:8px;
+    font-size:13px;font-weight:500;cursor:pointer;">
+    Save Preferences
+  </button>
+
+</div>
+
+<script>
+function setTheme(t){
+  if(t==='dark'){
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme','dark');
+    document.getElementById('btn-dark').style.background='#7C3AED';
+    document.getElementById('btn-dark').style.color='white';
+    document.getElementById('btn-light').style.background='var(--bg)';
+    document.getElementById('btn-light').style.color='var(--text)';
+  } else {
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme','light');
+    document.getElementById('btn-light').style.background='#2563EB';
+    document.getElementById('btn-light').style.color='white';
+    document.getElementById('btn-dark').style.background='var(--bg)';
+    document.getElementById('btn-dark').style.color='var(--text)';
+  }
+}
+function savePrefs(){
+  alert('Preferences saved successfully!');
+}
+</script>
+{% endblock %}

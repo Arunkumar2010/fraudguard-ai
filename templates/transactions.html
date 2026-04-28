@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Transaction History</h1>
+    <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline">
+            <i data-lucide="download" size="16"></i> Export CSV
+        </button>
+        <button class="btn btn-primary">
+            <i data-lucide="plus" size="16"></i> Add Transaction
+        </button>
+    </div>
+</div>
+
+<div class="card" style="padding: 1rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <div class="search-box" style="flex: 1; min-width: 250px;">
+        <i data-lucide="filter" size="18" style="color: var(--text3);"></i>
+        <input type="text" placeholder="Search by ID or Location...">
+    </div>
+    <select class="btn btn-outline" style="appearance: auto; padding-right: 2rem; background-color: var(--card2); color: var(--text); border-color: var(--border);">
+        <option>All Statuses</option>
+        <option>Legitimate</option>
+        <option>Fraudulent</option>
+    </select>
+    <select class="btn btn-outline" style="appearance: auto; padding-right: 2rem; background-color: var(--card2); color: var(--text); border-color: var(--border);">
+        <option>All Risk Levels</option>
+        <option>High</option>
+        <option>Medium</option>
+        <option>Low</option>
+    </select>
+</div>
+
+<div class="card" style="padding: 0;">
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Date & Time</th>
+                <th>Amount</th>
+                <th>Location</th>
+                <th>Risk Level</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for txn in transactions %}
+            <tr class="status-row">
+                <td style="font-weight: 600;">{{ txn.id }}</td>
+                <td>{{ txn.date }}</td>
+                <td>{{ txn.amount }}</td>
+                <td>{{ txn.location }}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background-color: {% if txn.risk_score > 80 %}var(--danger){% elif txn.risk_score > 50 %}var(--warn){% else %}var(--safe){% endif %};"></span>
+                        {{ txn.risk_score }}%
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge {{ txn.status_class }}">
+                        {{ txn.status }}
+                    </span>
+                </td>
+                <td>
+                    <i data-lucide="eye" size="18" class="text-muted" style="cursor: pointer;"></i>
+                </td>
+            </tr>
+            {% endfor %}
+            <!-- Mock filler data if needed -->
+        </tbody>
+    </table>
+</div>
+{% endblock %}
