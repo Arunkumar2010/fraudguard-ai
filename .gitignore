@@ -3,6 +3,7 @@ dataset/*.csv
 models/*.pkl
 models/*.h5
 models/*.keras
+data/*.pkl
 __pycache__/
 *.pyc
 *.pyo

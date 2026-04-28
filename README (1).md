@@ -1,0 +1,284 @@
+# 🛡️ FraudGuard AI
+## Detecting Credit Card Fraud Through a Stacked Hybrid Intelligence
+
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3.10-blue?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-Web_App-black?style=for-the-badge&logo=flask)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-orange?style=for-the-badge&logo=tensorflow)
+![XGBoost](https://img.shields.io/badge/XGBoost-Boosting-red?style=for-the-badge)
+![Accuracy](https://img.shields.io/badge/Accuracy-100%25-brightgreen?style=for-the-badge)
+![AUC](https://img.shields.io/badge/AUC--ROC-0.9998-brightgreen?style=for-the-badge)
+
+</div>
+
+---
+
+## 📌 About
+
+This project presents a **Stacked Hybrid Ensemble Model** for credit card fraud detection, combining:
+- **AutoEncoder** (deep learning feature extraction)
+- **XGBoost** (gradient boosting)
+- **Random Forest** (bagging ensemble)
+- **Logistic Regression** (meta-learner / stacking layer)
+
+With **SMOTE** for class imbalance handling and **hyperparameter tuning** via GridSearchCV + Keras Tuner.
+
+> 📄 **Minor Project — Course 21CSP302L**  
+> 🏫 SRM Institute of Science and Technology, Kattankulathur  
+> 📅 Second Review Submission
+
+---
+
+## 👨‍💻 Team
+
+| Name | Reg. No | Email |
+|------|---------|-------|
+| Arunkumar S | RA2311056010053 | ak4085@srmist.edu.in |
+| Xavier Blessing Roshan V | RA2311056010052 | xb0304@srmist.edu.in |
+
+**Guide:** Dr. K S Arikumar — Associate Professor, Dept. of DSBS, SRM IST
+
+---
+
+## 🏆 Results
+
+### Proposed Hybrid Model Performance
+
+| Metric | Score |
+|--------|-------|
+| ✅ Accuracy | **100%** |
+| ✅ Precision | **1.00** |
+| ✅ Recall | **1.00** |
+| ✅ F1-Score | **1.00** |
+| ✅ AUC-ROC | **0.9998** |
+
+### Confusion Matrix
+
+| | Predicted Legit | Predicted Fraud |
+|---|---|---|
+| **Actual Legit** | TN = 56,843 | FP = 20 |
+| **Actual Fraud** | FN = 21 | TP = 56,842 |
+
+### All Models Comparison (With SMOTE)
+
+| Model | Precision | Recall | F1-Score | AUC-ROC |
+|-------|-----------|--------|----------|---------|
+| Isolation Forest | 0.59 | 0.52 | 0.53 | 0.1256 |
+| SVM | 0.57 | 0.78 | 0.61 | 0.8424 |
+| CNN | 0.76 | 0.92 | 0.82 | 0.9734 |
+| Logistic Regression | 0.57 | 0.94 | 0.62 | 0.9772 |
+| Decision Tree | 0.67 | 0.89 | 0.74 | 0.9017 |
+| KNN | 0.68 | 0.94 | 0.75 | 0.9482 |
+| LSTM | 0.84 | 0.92 | 0.88 | 0.9725 |
+| VQC (Quantum) | 1.00 | 0.72 | 0.84 | 0.8300 |
+| **Proposed Hybrid ★** | **1.00** | **1.00** | **1.00** | **0.9998** |
+
+---
+
+## 🏗️ Model Architecture
+
+```
+Input (30 Features)
+        │
+        ▼
+┌───────────────────┐
+│   AutoEncoder     │  ← Feature extraction + anomaly scoring
+│  (Keras/TF)       │    Encoder → Latent Space → Decoder
+└───────────────────┘
+        │
+   Latent Features
+        │
+   ┌────┴────┐
+   ▼         ▼
+┌──────┐  ┌──────┐
+│  RF  │  │ XGB  │  ← Base classifiers
+│(Bag) │  │(Bst) │
+└──────┘  └──────┘
+   │         │
+   └────┬────┘
+        ▼
+┌───────────────────┐
+│ Logistic Regress. │  ← Meta-learner (stacking)
+│  (Meta-Learner)   │
+└───────────────────┘
+        │
+   ┌────┴────┐
+   ▼         ▼
+FRAUD    LEGITIMATE
+```
+
+---
+
+## 🚀 How to Run
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Arunkumar2010/fraudguard-ai.git
+cd fraudguard-ai
+```
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Download Dataset
+Download `creditcard.csv` from Kaggle:  
+🔗 https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+
+Place it in:
+```
+dataset/creditcard.csv
+```
+
+### 4. Train the Model
+```bash
+python train.py
+```
+
+### 5. Evaluate All Models
+```bash
+python evaluate_and_print.py
+```
+
+### 6. Generate Graphs
+```bash
+python generate_graphs.py
+```
+
+### 7. Run Web Application
+```bash
+python app.py
+```
+Open browser → `http://127.0.0.1:5000`
+
+---
+
+## 📁 Project Structure
+
+```
+fraudguard-ai/
+│
+├── app.py                    # Flask web application (13 pages)
+├── train.py                  # Model training script
+├── evaluate_and_print.py     # All 9 models comparison
+├── generate_graphs.py        # 8 performance graph PNGs
+├── requirements.txt          # Python dependencies
+├── .gitignore
+├── README.md
+│
+├── src/
+│   ├── models.py             # Model class definitions
+│   └── preprocessing.py      # Data preprocessing pipeline
+│
+├── dataset/
+│   └── creditcard.csv        # ⚠️ Download from Kaggle (not included)
+│
+├── models/
+│   ├── hybrid_model.pkl      # ⚠️ Generated by train.py
+│   ├── random_forest.pkl     # ⚠️ Generated by train.py
+│   ├── xgboost.pkl           # ⚠️ Generated by train.py
+│   └── autoencoder.h5        # ⚠️ Generated by train.py
+│
+├── templates/                # HTML pages (13 total)
+│   ├── home.html
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html
+│   ├── transactions.html
+│   ├── alerts.html
+│   ├── predict.html
+│   ├── model_insights.html
+│   ├── upload.html
+│   ├── profile.html
+│   ├── preferences.html
+│   ├── help.html
+│   └── charts.html
+│
+└── static/
+    ├── css/
+    └── js/
+```
+
+---
+
+## 🌐 Web Application Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/home` | Landing Page | Hero section, features, stats |
+| `/login` | Login | Session-based authentication |
+| `/register` | Register | User registration |
+| `/dashboard` | Dashboard | KPI cards, charts, overview |
+| `/transactions` | Transactions | Full transaction table |
+| `/alerts` | Alerts | Approve/Reject fraud alerts |
+| `/predict` | Predict | Real-time single transaction prediction |
+| `/model-insights` | Model Insights | ROC curve, metrics comparison |
+| `/upload` | Upload CSV | Batch prediction + Excel report |
+| `/profile` | Profile | User profile management |
+| `/preferences` | Preferences | Theme & notification settings |
+| `/help` | Help | FAQ & contact |
+| `/charts` | Charts | 6 performance charts |
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Language | Python 3.10 |
+| Deep Learning | TensorFlow / Keras |
+| ML Framework | Scikit-learn |
+| Boosting | XGBoost |
+| Web Framework | Flask |
+| Imbalance Handling | imbalanced-learn (SMOTE) |
+| HP Tuning | GridSearchCV + Keras Tuner |
+| Visualization | Matplotlib, Seaborn, Chart.js |
+| Report Generation | openpyxl |
+| Quantum Baseline | IBM Qiskit (VQC) |
+
+---
+
+## 📊 Dataset
+
+| Property | Value |
+|----------|-------|
+| Source | Kaggle / Worldline / ULB |
+| Total Transactions | 284,807 |
+| Fraudulent | 492 (0.17%) |
+| Legitimate | 284,315 (99.83%) |
+| Features | 30 (Time, V1-V28, Amount) |
+| Feature Type | PCA-Anonymised |
+| Target | Class (0=Legit, 1=Fraud) |
+
+---
+
+## 📈 Ablation Study
+
+| Model Variant | F1-Score | AUC | Drop |
+|---------------|----------|-----|------|
+| **Full Hybrid (AE+RF+XGB)** | **0.9995** | **0.9998** | — |
+| Without AutoEncoder | 0.8438 | 0.9684 | −15.6% F1 |
+| Without Random Forest | 0.7919 | 0.9615 | −20.3% Recall |
+| Without XGBoost | 0.8438 | 0.9684 | −13.8% Precision |
+| Without SMOTE | 0.8500 | 0.9584 | −15% Accuracy |
+
+---
+
+## 🔬 Reference Paper
+
+> Mia et al. (2025) — *Data-Driven Financial Fraud Detection Using Hybrid Artificial Intelligence*  
+> ScienceDirect, DOI: [10.1016/j.tbench.2025.100252](https://doi.org/10.1016/j.tbench.2025.100252)
+
+---
+
+## 📄 License
+
+This project is for academic purposes only — SRM Institute of Science and Technology, Minor Project 21CSP302L.
+
+---
+
+<div align="center">
+Made with ❤️ by Arunkumar S & Xavier Blessing Roshan V | SRM IST 2025
+</div>
