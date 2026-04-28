@@ -4,6 +4,7 @@ models/*.pkl
 models/*.h5
 models/*.keras
 data/*.pkl
+data/*.csv
 __pycache__/
 *.pyc
 *.pyo
