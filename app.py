@@ -12,7 +12,7 @@ from functools import wraps
 from src.models import HybridModel
 
 app = Flask(__name__)
-app.secret_key = 'fraudguard_secret_key_2025'
+app.secret_key = os.environ.get('SECRET_KEY', 'fraudguard_secret_key_2025')
 
 # Login Required Decorator
 def login_required(f):
@@ -23,13 +23,21 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Load models and scaler
-print("Loading models and scaler for FraudGuard AI...")
-scaler = joblib.load('models/scaler.pkl')
-autoencoder = load_model('models/autoencoder.keras')
-hybrid_model = joblib.load('models/hybrid_model.pkl')
-rf_model = joblib.load('models/random_forest.pkl')
-xgb_model = joblib.load('models/xgboost.pkl')
+try:
+    print("Loading models...")
+    scaler = joblib.load('models/scaler.pkl')
+    autoencoder = load_model('models/autoencoder.keras')
+    hybrid_model = joblib.load('models/hybrid_model.pkl')
+    rf_model = joblib.load('models/random_forest.pkl')
+    xgb_model = joblib.load('models/xgboost.pkl')
+except Exception as e:
+    print(f"Warning: Models not loaded: {e}")
+    print("Running in Fallback Mode (Rule Engine).")
+    scaler = None
+    autoencoder = None
+    hybrid_model = None
+    rf_model = None
+    xgb_model = None
 
 def get_ae_error(data_scaled):
     reconstructed = autoencoder.predict(data_scaled, verbose=0)
